@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
@@ -13,13 +13,23 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { Route } from 'react-router-dom'
-import Status from './status'
-import Maps from './maps'
 import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Link } from 'react-router-dom'
-import InputBase from '@material-ui/core/InputBase';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import MailIcon from '@material-ui/icons/Mail';
+
+import CardMedia from '@material-ui/core/CardMedia';
+
+import logo from '../images/logo.png'
+
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+
+import Status from './status'
+import { red } from '@material-ui/core/colors';
+
+import Device from './device'
+
 
 const drawerWidth = 240;
 
@@ -61,13 +71,19 @@ const styles = theme => ({
         padding: '0 8px',
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
+        backgroundColor: "#0f3592",
     },
-    mytoolbar: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 8px',
-        ...theme.mixins.toolbar,
-        justifyContent: 'space-between',
+    drawerHeader1: {
+        marginTop: 50
+    },
+    drawerLogo: {
+        // backgroundColor: "red",
+        // padding: 10
+
+    },
+    logoImg: {
+        height: 'auto',
+        width: '100%'
     },
     content: {
         flexGrow: 1,
@@ -85,110 +101,147 @@ const styles = theme => ({
         }),
         marginLeft: 0,
     },
+    listItem: {
+        marginTop: 20,
+        marginButtom: 20
+    },
+    itemText: {
+        display: "flex",
+        justifyContent: "center"
+    }
 });
 
-let menuItems = [
-    {
-        "title": "垃圾桶状态",
-        "link": "/admin/trashcan/status"
-    },
-    {
-        "title": "垃圾桶地图",
-        "link": "/admin/trashcan/map"
+function DrawerTitle(props) {
+    let link = props.location.pathname
+    console.log(link)
+    var title = ""
+    switch (link) {
+        case "/admin/trashcan/status":
+            title = "垃圾桶状态"
+            break;
+        case "/admin/trashcan/maps":
+            title = "垃圾桶地图"
+            break;
+        default:
+            title = "后台管理"
+            break;
     }
-]
-
-
-function Mydrawer(props) {
-    const { classes, theme } = props;
-    let [open, setOpen] = useState(true)
-
     return (
-        <div className={classes.root}>
-            <CssBaseline />
-            <AppBar
-                position="fixed"
-                className={classNames(classes.appBar, {
-                    [classes.appBarShift]: open,
-                })}
-            >
-                <Toolbar disableGutters={!open} className={classes.mytoolbar}>
-                    <IconButton
-                        color="inherit"
-                        aria-label="Open drawer"
-                        onClick={() => {
-                            open ? setOpen(false) : setOpen(true)
-                        }}
-                        className={classNames(classes.menuButton, open && classes.hide)}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    {menuItems.map((item, index) => (
-                        <Route path={item.link} render={() => {
-                            return (
-                                <Typography variant="h6" color="inherit" noWrap>
-                                    {item.title}
-                                </Typography>
-                            )
-                        }} />
-                    ))}
-
-                    <InputBase
-                        placeholder="Search…"
-                        classes={{
-                            root: classes.inputRoot,
-                            input: classes.inputInput,
-                        }}
-                    />
-                </Toolbar>
-            </AppBar>
-            <Drawer
-                className={classes.drawer}
-                variant="persistent"
-                anchor="left"
-                open={open}
-                classes={{
-                    paper: classes.drawerPaper,
-                }}
-            >
-                <div className={classes.drawerHeader}>
-                    <IconButton onClick={() => {
-                        open ? setOpen(false) : setOpen(true)
-                    }}>
-                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                    </IconButton>
-                </div>
-                <Divider />
-                <List>
-                    {menuItems.map((item, index) => (
-                        <ListItem button key={item.title} component={props => <Link {...props} to={item.link} />}>
-                            <ListItemText primary={item.title}>
-                            </ListItemText>
-                        </ListItem>
-
-                    ))}
-                </List>
-                <Divider />
-
-            </Drawer>
-            <main
-                className={classNames(classes.content, {
-                    [classes.contentShift]: open,
-                })}
-            >
-                <div className={classes.drawerHeader} />
-
-                <Route path="/admin/trashcan/status" component={Status} />
-                <Route path="/admin/trashcan/map" component={Maps} />
-            </main>
-        </div>
-    );
+        <Typography variant="h6" color="inherit" noWrap>
+            {title}
+        </Typography>
+    )
 }
 
+class PersistentDrawerLeft extends React.Component {
 
-Mydrawer.propTypes = {
+    menuItems = [
+        { name: "垃圾桶状态", route: "/admin/trashcan/status" },
+        { name: "垃圾桶地图", route: "/admin/trashcan/maps" }
+    ]
+
+    state = {
+        open: true,
+    };
+
+    handleDrawerOpen = () => {
+        this.setState({ open: true });
+    };
+
+    handleDrawerClose = () => {
+        this.setState({ open: false });
+    };
+
+    render() {
+        const { classes, theme } = this.props;
+        const { open } = this.state;
+
+        return (
+            <div className={classes.root}>
+
+                <CssBaseline />
+                <AppBar
+                    position="fixed"
+                    className={classNames(classes.appBar, {
+                        [classes.appBarShift]: open,
+                    })}
+                >
+                    <Toolbar disableGutters={!open}>
+                        <IconButton
+                            color="inherit"
+                            aria-label="Open drawer"
+                            onClick={this.handleDrawerOpen}
+                            className={classNames(classes.menuButton, open && classes.hide)}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Route path="/admin" component={DrawerTitle} />
+                    </Toolbar>
+                </AppBar>
+                <Drawer
+                    className={classes.drawer}
+                    variant="persistent"
+                    anchor="left"
+                    open={open}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div className={classes.drawerHeader}>
+                        <div className={classes.drawerLogo}>
+                            <CardMedia
+                                component="img"
+                                alt="Contemplative Reptile"
+                                className={classes.media}
+                                image={logo}
+                                title="logo"
+                            />
+                        </div>
+                        <IconButton onClick={this.handleDrawerClose}>
+                            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                        </IconButton>
+                    </div>
+                    <Divider />
+                    <List className={classes.listItem}>
+                        {this.menuItems.map((item, index) => (
+                            <Link to={item.route} style={{ textDecoration: 'none' }}>
+                                <ListItem button key={item.name}>
+                                    {/* <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon> */}
+                                    <ListItemText className={classes.itemText} primary={item.name} />
+                                </ListItem>
+                            </Link>
+
+                        ))}
+                    </List>
+                    {/* <Divider /> */}
+                    {/* <List>
+                        {['All mail', 'Trash', 'Spam'].map((text, index) => (
+                            <ListItem button key={text}>
+                                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItem>
+                        ))}
+                    </List> */}
+                </Drawer>
+                <main
+                    className={classNames(classes.content, {
+                        [classes.contentShift]: open,
+                    })}
+                >
+                    <div className={classes.drawerHeader1}/>
+                    {/* <Route exact path="/" component={Home} /> */}
+                    <Route path="/admin/trashcan/status" component={Status} />
+                    {/* <Route path="/admin/trashcan/maps" component={Maps} /> */}
+                    <Route path="/admin/trashcan/device/:deviceid" component={Device} />
+                </main>
+            </div>
+        );
+    }
+}
+
+PersistentDrawerLeft.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(Mydrawer);
+export default withStyles(styles, { withTheme: true })(PersistentDrawerLeft);

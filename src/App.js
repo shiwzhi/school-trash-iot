@@ -1,7 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
-import Drawer from './components/drawer'
+import Index from './components/index'
+import Admin from './components/admin'
+
 
 
 function AdminPage() {
@@ -18,7 +20,7 @@ function Users() {
 function AppRouter() {
   return (
     <Router>
-      <Route path="/admin" component={Drawer} />
+      <Route path="/admin" component={Admin} />
     </Router>
   );
 }
