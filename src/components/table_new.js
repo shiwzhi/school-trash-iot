@@ -43,7 +43,8 @@ let columns = [
     "设备id",
     "上线时间",
     "状态",
-    "数据"
+    "数据",
+    "操作"
 ]
 
 
@@ -84,7 +85,7 @@ function SimpleTable(props) {
     }
 
     useEffect(() => {
-        axios.get("http://localhost:3001/devices").then((res) => {
+        axios.get("/devices").then((res) => {
             res.data.sort((a, b) => {
                 if (a.latestRegTime > b.latestRegTime) {
                     return -1
@@ -105,13 +106,21 @@ function SimpleTable(props) {
     // }
 
     function resetDeviceTable() {
-        axios.get("http://localhost:3001/devices").then((res) => {
+        axios.get("/devices").then((res) => {
             setTableData(state => ({ ...state, data: res.data }))
             sortBySensorData()
         })
     }
 
-
+    function deleteDevice(deviceid) {
+        axios.post("/deldevice", {
+            device: {
+                deviceid: deviceid
+            }
+        }).then(res=>{
+            console.log(res)
+        })
+    }
 
     return (
         <div >
@@ -135,7 +144,7 @@ function SimpleTable(props) {
                     </TableHead>
                     <TableBody>
                         {tableData.data.map((item, index) => (
-                            <TableRow>
+                            <TableRow key={item.deviceid}>
                                 <TableCell component="th" scope="row">
                                     <Link to={"/admin/trashcan/device/" + item.deviceid}>
                                         {item.deviceinfo}
@@ -149,6 +158,7 @@ function SimpleTable(props) {
                                 }()}</TableCell>
                                 <TableCell align="left">{item.devicestatus}</TableCell>
                                 <TableCell align="left">{item.latestData.data}</TableCell>
+                                <TableCell align="left"><Button variant="outlined" color="secondary" onClick={()=>{deleteDevice(item.deviceid)}}>删除</Button></TableCell>
                             </TableRow>
 
                         ))}

@@ -19,6 +19,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 
+import Maps from './maps'
+
 import CardMedia from '@material-ui/core/CardMedia';
 
 import logo from '../images/logo.png'
@@ -231,7 +233,7 @@ class PersistentDrawerLeft extends React.Component {
                     <div className={classes.drawerHeader1}/>
                     {/* <Route exact path="/" component={Home} /> */}
                     <Route path="/admin/trashcan/status" component={Status} />
-                    {/* <Route path="/admin/trashcan/maps" component={Maps} /> */}
+                    <Route path="/admin/trashcan/maps" component={Maps} />
                     <Route path="/admin/trashcan/device/:deviceid" component={Device} />
                 </main>
             </div>

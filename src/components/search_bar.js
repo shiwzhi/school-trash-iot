@@ -14,7 +14,7 @@ import color from '@material-ui/core/colors/teal';
 const styles = theme => (
     {
         root: {
-            // padding: '2px 4px',
+            margin: theme.spacing.unit,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -37,7 +37,7 @@ const styles = theme => (
         textField: {
             // marginLeft: theme.spacing.unit,
             // marginRight: theme.spacing.unit,
-            width: 400,
+            width: 300,
             // height: 10
         },
 
