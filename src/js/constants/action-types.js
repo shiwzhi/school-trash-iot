@@ -1,0 +1,3 @@
+export const ADD_ARTICLE = "ADD_ARTICLE";
+export const SEARCH_BAR_TEXT_CHANGE = "SEARCH_BAR_TEXT_CHANGE";
+

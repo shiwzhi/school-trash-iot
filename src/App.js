@@ -5,8 +5,11 @@ import Index from './components/index'
 import Admin from './components/admin'
 import Login from './components/login'
 
+import { Provider } from 'react-redux'
+import store from './js/store/index'
+
 const axios = require('axios');
-axios.defaults.baseURL = 'http://localhost:3001';
+axios.defaults.baseURL = 'http://localhost:3100';
 axios.interceptors.request.use(function (config) {
   // Do something before request is sent
   config.withCredentials = true
@@ -25,10 +28,15 @@ axios.interceptors.response.use(function (response) {
   // Do something with response error
   var res = error.response
   console.log(res)
-  if (res.status === 401) {
-    console.log("401")
+  try {
+    if (res.status === 401) {
+      console.log("401")
+      window.location = "/login"
+    }
+  } catch (error) {
     window.location = "/login"
   }
+  
   return Promise.reject(error);
 });
 
@@ -46,10 +54,14 @@ function Users() {
 
 function AppRouter() {
   return (
+    <Provider store={store}>
     <Router>
+      <Route exact path="/" component={Index} />
       <Route path="/login" component={Login} />
       <Route path="/admin" component={Admin} />
     </Router>
+    </Provider>
+    
   );
 }
 

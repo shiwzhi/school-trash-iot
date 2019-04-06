@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -10,6 +10,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import DirectionsIcon from '@material-ui/icons/Directions';
 import TextField from '@material-ui/core/TextField'
 import color from '@material-ui/core/colors/teal';
+
+import store from '../js/store/index'
+import {searchBarTextChange} from '../js/actions/index'
 
 const styles = theme => (
     {
@@ -48,6 +51,9 @@ const styles = theme => (
 function CustomizedInputBase(props) {
     const { classes } = props;
 
+    let [searchText, setSearchText] = useState("")
+
+
     return (
         <div className={classes.root}>
             <TextField
@@ -59,8 +65,13 @@ function CustomizedInputBase(props) {
                 autoComplete="email"
                 margin="normal"
                 variant="outlined"
+                onChange={(e)=>{
+                    setSearchText(e.target.value)
+                }}
             />
-            <IconButton className={classes.iconButton} aria-label="Search">
+            <IconButton className={classes.iconButton} aria-label="Search" onClick={(e)=>{
+                props.handleSearch(searchText)
+            }}>
                 <SearchIcon />
             </IconButton>
         </div>

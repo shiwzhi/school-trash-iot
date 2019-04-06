@@ -10,7 +10,13 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom'
 import SearchBar from './search_bar'
+import store from '../js/store/index'
+
+
+
 const axios = require('axios');
+
+
 
 const styles = theme => ({
     root: {
@@ -52,40 +58,149 @@ function SimpleTable(props) {
     const { classes } = props;
 
     let [tableData, setTableData] = useState({
-        sort: 'dec',
+        displayMode: 'first',
         data: []
     })
 
     function sortBySensorData() {
+        console.log("sort data")
         setTableData(state => ({
-            ...state, data: tableData.data.sort((a, b) => {
-                if (a.latestData.data > b.latestData.data) {
-                    return 1
-                }
-                if (a.latestData.data < b.latestData.data) {
-                    return -1
-                }
-                return 0
-            })
+            ...state, displayMode: "data"
         }))
+        // setTableData(state => ({
+        //     ...state, data: tableData.data.sort((a, b) => {
+        //         if (a.latestData.data > b.latestData.data) {
+        //             return 1
+        //         }
+        //         if (a.latestData.data < b.latestData.data) {
+        //             return -1
+        //         }
+        //         return 0
+        //     })
+        // }))
     }
 
     function sortByTime() {
+        console.log("sort time")
         setTableData(state => ({
-            ...state, data: tableData.data.sort((a, b) => {
-                if (a.latestRegTime > b.latestRegTime) {
-                    return -1
-                }
-                if (a.latestRegTime < b.latestRegTime) {
-                    return 1
-                }
-                return 0
-            })
+            ...state, displayMode: "time"
         }))
+        // setTableData(state => ({
+        //     ...state, data: tableData.data.sort((a, b) => {
+        //         if (a.latestRegTime > b.latestRegTime) {
+        //             return -1
+        //         }
+        //         if (a.latestRegTime < b.latestRegTime) {
+        //             return 1
+        //         }
+        //         return 0
+        //     })
+        // }))
+    }
+
+    function resetDeviceTable() {
+        console.log("filter offline device")
+        setTableData(state => ({
+            ...state, displayMode: "first"
+        }))
+        // axios.get("/devices").then((res) => {
+        //     console.log("reset table data")
+        //     console.log(res.data)
+        //     setTableData(state => ({ ...state, data: res.data }))
+        //     // sortBySensorData()
+        // })
+    }
+
+    function showOfflineDevice() {
+        console.log("filter offline device")
+        setTableData(state => ({
+            ...state, displayMode: "offline"
+        }))
+        // setTableData(state => ({
+        //     ...state, data: tableData.data.filter((value) => {
+        //         if (value.devicestatus === "离线") {
+        //             return true
+        //         } else return false
+        //     })
+        // }))
     }
 
     useEffect(() => {
-        axios.get("/devices").then((res) => {
+        switch (tableData.displayMode) {
+            case "data":
+                setTableData(state => ({
+                    ...state, data: tableData.data.sort((a, b) => {
+                        if (a.latestData.data > b.latestData.data) {
+                            return 1
+                        }
+                        if (a.latestData.data < b.latestData.data) {
+                            return -1
+                        }
+                        return 0
+                    })
+                }))
+                break
+            case "time":
+                setTableData(state => ({
+                    ...state, data: tableData.data.sort((a, b) => {
+                        if (a.latestRegTime > b.latestRegTime) {
+                            return -1
+                        }
+                        if (a.latestRegTime < b.latestRegTime) {
+                            return 1
+                        }
+                        return 0
+                    })
+                }))
+                break
+            case "offline":
+                setTableData(state => ({
+                    ...state, data: tableData.data.filter((value) => {
+                        if (value.devicestatus === "离线") {
+                            return true
+                        } else return false
+                    })
+                }))
+                break
+            default:
+                console.log("default")
+                axios.get("/devices").then((res) => {
+                    res.data.sort((a, b) => {
+                        if (a.latestRegTime > b.latestRegTime) {
+                            return -1
+                        }
+                        if (a.latestRegTime < b.latestRegTime) {
+                            return 1
+                        }
+                        return 0
+                    })
+                    setTableData(state => ({ ...state, data: res.data }))
+                })
+                break
+        }
+
+    }, [tableData.displayMode])
+
+
+    // function toggleOfflineDevice() {
+    //     setTableData(state=>({...state, data: res.data}))
+    //     setTableData(tableData.data.filter(item => item.devicestatus !== "离线"))
+    // }
+
+
+
+    function deleteDevice(deviceid) {
+        axios.post("/deldevice", {
+            device: {
+                deviceid: deviceid
+            }
+        }).then(res => {
+            console.log(res)
+        })
+    }
+
+    function handleSearch(searchText) {
+        axios.get("/devices?searchText="+searchText).then((res) => {
             res.data.sort((a, b) => {
                 if (a.latestRegTime > b.latestRegTime) {
                     return -1
@@ -97,30 +212,8 @@ function SimpleTable(props) {
             })
             setTableData(state => ({ ...state, data: res.data }))
         })
-    }, [])
-
-
-    // function toggleOfflineDevice() {
-    //     setTableData(state=>({...state, data: res.data}))
-    //     setTableData(tableData.data.filter(item => item.devicestatus !== "离线"))
-    // }
-
-    function resetDeviceTable() {
-        axios.get("/devices").then((res) => {
-            setTableData(state => ({ ...state, data: res.data }))
-            sortBySensorData()
-        })
     }
 
-    function deleteDevice(deviceid) {
-        axios.post("/deldevice", {
-            device: {
-                deviceid: deviceid
-            }
-        }).then(res=>{
-            console.log(res)
-        })
-    }
 
     return (
         <div >
@@ -129,9 +222,9 @@ function SimpleTable(props) {
                     <Button variant="outlined" color="primary" className={classes.button} onClick={sortBySensorData}>数据优先</Button>
                     <Button variant="outlined" color="primary" className={classes.button} onClick={sortByTime}>时间优先</Button>
                     <Button variant="outlined" color="primary" className={classes.button} onClick={resetDeviceTable}>刷新</Button>
-                    <Button variant="outlined" color="primary" className={classes.button} >离线设备</Button>
+                    <Button variant="outlined" color="primary" className={classes.button} onClick={showOfflineDevice}>离线设备</Button>
                 </div>
-                <SearchBar />
+                <SearchBar handleSearch={handleSearch}/>
             </div>
             <Paper className={classes.root}>
                 <Table className={classes.table}>
@@ -150,15 +243,20 @@ function SimpleTable(props) {
                                         {item.deviceinfo}
                                     </Link>
                                 </TableCell>
-                                <TableCell align="left">{item.deviceid}</TableCell>
+                                <TableCell align="left"><Link to={"/admin/trashcan/device/" + item.deviceid}>{item.deviceid}</Link></TableCell>
                                 <TableCell align="left">{function () {
                                     var d = new Date(0);
                                     d.setUTCSeconds(parseInt(item.latestRegTime));
                                     return d.toLocaleString()
                                 }()}</TableCell>
                                 <TableCell align="left">{item.devicestatus}</TableCell>
-                                <TableCell align="left">{item.latestData.data}</TableCell>
-                                <TableCell align="left"><Button variant="outlined" color="secondary" onClick={()=>{deleteDevice(item.deviceid)}}>删除</Button></TableCell>
+                                <TableCell align="left">{(function(){
+                                    var data = parseInt(item.latestData.data);
+                                    var device = parseInt(item.cal_empty) - parseInt(item.cal_full);
+                                    var percent = parseInt(((device - (data - parseInt(item.cal_full)))/device)*100);
+                                    console.log(percent);
+                                    return percent})()+"%"}</TableCell>
+                                <TableCell align="left"><Button variant="outlined" color="secondary" onClick={() => { deleteDevice(item.deviceid) }}>删除</Button></TableCell>
                             </TableRow>
 
                         ))}

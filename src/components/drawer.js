@@ -18,6 +18,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
+import { withRouter } from "react-router";
 
 import Maps from './maps'
 
@@ -135,7 +136,17 @@ function DrawerTitle(props) {
     )
 }
 
+
+
 class PersistentDrawerLeft extends React.Component {
+
+    handleUserLogout() {
+        var self = this
+        const axios = require('axios');
+        axios.post("/logout").then((res) => {
+            self.props.history.push('/')
+        })
+    }
 
     menuItems = [
         { name: "垃圾桶状态", route: "/admin/trashcan/status" },
@@ -215,22 +226,22 @@ class PersistentDrawerLeft extends React.Component {
 
                         ))}
                     </List>
-                    {/* <Divider /> */}
-                    {/* <List>
-                        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                            <ListItem button key={text}>
-                                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItem>
-                        ))}
-                    </List> */}
+                    <Divider />
+                    <List className={classes.listItem}>
+                        <ListItem button >
+                            <ListItemText className={classes.itemText}>用户管理</ListItemText>
+                        </ListItem>
+                        <ListItem button  onClick={this.handleUserLogout.bind(this)}>
+                            <ListItemText className={classes.itemText}>登出</ListItemText>
+                        </ListItem>
+                    </List>
                 </Drawer>
                 <main
                     className={classNames(classes.content, {
                         [classes.contentShift]: open,
                     })}
                 >
-                    <div className={classes.drawerHeader1}/>
+                    <div className={classes.drawerHeader1} />
                     {/* <Route exact path="/" component={Home} /> */}
                     <Route path="/admin/trashcan/status" component={Status} />
                     <Route path="/admin/trashcan/maps" component={Maps} />
@@ -246,4 +257,4 @@ PersistentDrawerLeft.propTypes = {
     theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(PersistentDrawerLeft);
+export default  withRouter(withStyles(styles, { withTheme: true })(PersistentDrawerLeft));
