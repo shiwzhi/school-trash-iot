@@ -14,24 +14,17 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import { withRouter } from "react-router";
 
 import Maps from './maps'
-
 import CardMedia from '@material-ui/core/CardMedia';
-
-import logo from '../images/logo.png'
-
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-
-import Status from './status'
-import { red } from '@material-ui/core/colors';
-
+import logo from '../../images/logo.png'
+import { Route, Link } from "react-router-dom";
+import Status from './device_table'
 import Device from './device'
+import UserTable from './user_table'
+import User from './user'
 
 
 const drawerWidth = 240;
@@ -70,17 +63,16 @@ const styles = theme => ({
     },
     drawerHeader: {
         display: 'flex',
-        alignItems: 'center',
-        padding: '0 8px',
         ...theme.mixins.toolbar,
-        justifyContent: 'flex-end',
-        backgroundColor: "#0f3592",
+        backgroundColor: "#404dae",
+        
     },
     drawerHeader1: {
         marginTop: 50
     },
     drawerLogo: {
-        // backgroundColor: "red",
+        display: 'flex',
+        alignItems: 'center',
         // padding: 10
 
     },
@@ -143,14 +135,15 @@ class PersistentDrawerLeft extends React.Component {
     handleUserLogout() {
         var self = this
         const axios = require('axios');
-        axios.post("/logout").then((res) => {
+        axios.post("/api/user/logout").then((res) => {
             self.props.history.push('/')
         })
     }
 
     menuItems = [
         { name: "垃圾桶状态", route: "/admin/trashcan/status" },
-        { name: "垃圾桶地图", route: "/admin/trashcan/maps" }
+        { name: "垃圾桶地图", route: "/admin/trashcan/maps" },
+
     ]
 
     state = {
@@ -217,8 +210,8 @@ class PersistentDrawerLeft extends React.Component {
                     <Divider />
                     <List className={classes.listItem}>
                         {this.menuItems.map((item, index) => (
-                            <Link to={item.route} style={{ textDecoration: 'none' }}>
-                                <ListItem button key={item.name}>
+                            <Link to={item.route} style={{ textDecoration: 'none' }} key={item.name}>
+                                <ListItem button >
                                     {/* <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon> */}
                                     <ListItemText className={classes.itemText} primary={item.name} />
                                 </ListItem>
@@ -229,9 +222,11 @@ class PersistentDrawerLeft extends React.Component {
                     <Divider />
                     <List className={classes.listItem}>
                         <ListItem button >
-                            <ListItemText className={classes.itemText}>用户管理</ListItemText>
+                            <ListItemText className={classes.itemText} onClick={() => {
+                                this.props.history.push('/admin/trashcan/user')
+                            }}>用户管理</ListItemText>
                         </ListItem>
-                        <ListItem button  onClick={this.handleUserLogout.bind(this)}>
+                        <ListItem button onClick={this.handleUserLogout.bind(this)}>
                             <ListItemText className={classes.itemText}>登出</ListItemText>
                         </ListItem>
                     </List>
@@ -242,10 +237,12 @@ class PersistentDrawerLeft extends React.Component {
                     })}
                 >
                     <div className={classes.drawerHeader1} />
-                    {/* <Route exact path="/" component={Home} /> */}
                     <Route path="/admin/trashcan/status" component={Status} />
                     <Route path="/admin/trashcan/maps" component={Maps} />
                     <Route path="/admin/trashcan/device/:deviceid" component={Device} />
+                    <Route path="/admin/trashcan/user" component={UserTable} />
+                    <Route path="/admin/user" component={User} />
+                    
                 </main>
             </div>
         );
@@ -257,4 +254,4 @@ PersistentDrawerLeft.propTypes = {
     theme: PropTypes.object.isRequired,
 };
 
-export default  withRouter(withStyles(styles, { withTheme: true })(PersistentDrawerLeft));
+export default withRouter(withStyles(styles, { withTheme: true })(PersistentDrawerLeft));
