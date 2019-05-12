@@ -26,6 +26,8 @@ import Device from './device'
 import UserTable from './user_table'
 import User from './user'
 
+import axios from '../../js/axios'
+
 
 const drawerWidth = 240;
 
@@ -131,6 +133,14 @@ function DrawerTitle(props) {
 
 
 class PersistentDrawerLeft extends React.Component {
+
+    constructor(props) {
+        super(props)
+        
+        axios.get("/api/device/all").then(result=>{
+            console.log(result)
+        })
+    }
 
     handleUserLogout() {
         var self = this

@@ -56,6 +56,17 @@ export default withStyles(styles)((props) => {
                     onClick={() => {
                         console.log(username)
                         console.log(password)
+                        axios.post('/api/user/update', {
+                            username: username,
+                            password: password
+                        }).then(res=> {
+                            console.log(res)
+                            alert(res.data)
+                            
+                        }).catch(error=>{
+                            console.log(error)
+                            alert(error.data)
+                        })
                     }}
                 >
                     更新

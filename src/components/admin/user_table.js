@@ -28,6 +28,12 @@ export default withStyles(styles)((props) => {
         axios.get('/api/user/all').then(res=>{
             var users = res.data
             if (users.length > 0) {
+                users = users.map((val, index)=>{
+                    var d = new Date(0)
+                    d.setUTCSeconds(parseInt(val.regTime))
+                    val.regTime = d.toLocaleDateString()+ " " + d.toLocaleTimeString()
+                    return val
+                })
                 setUsers(users)
             }
         })
@@ -44,10 +50,6 @@ export default withStyles(styles)((props) => {
         {
             name: 'regTime',
             label: '注册时间'
-        },
-        {
-            name: 'loginTIme',
-            label: '登录时间'
         },
 
     ]

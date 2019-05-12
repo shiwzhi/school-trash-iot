@@ -32,8 +32,8 @@ function IndexPage(props) {
     return (
 
         <Grid container spcing={24}>
-            <Grid item xs={12} style={{backgroundColor: 'red'}}>
-                <Grid alignContent={"flex-end"} style={{backgroundColor: 'blue'}}>
+            <Grid item xs={12} >
+                <Grid alignContent={"flex-end"}>
                     <Typography variant="h6">欢迎访问物联网平台</Typography>
                 </Grid>
             </Grid>

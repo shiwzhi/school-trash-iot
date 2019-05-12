@@ -8,8 +8,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Typography } from '@material-ui/core';
 import SnackBar from './snackbar'
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+
+import { Container, Row, Col } from 'react-bootstrap'
+
 
 const axios = require('axios')
 
@@ -110,14 +111,9 @@ function DeviceForm(props) {
     }, [])
 
     function updateDevice() {
-        var data = new FormData();
-        data.append('file', document.getElementById('otafile').files[0])
-        data.append('deviceid', deviceinfo.deviceid)
-        axios.post("/api/device/uploadOTAfile", data).then(result => {
-            axios.post("/api/device/update", { device: deviceinfo }).then((res) => {
-                console.log(res)
-                handleSnack(true, "已提交", "success")
-            })
+        axios.post("/api/device/update", { device: deviceinfo }).then((res) => {
+            console.log(res)
+            alert(res.data)
         })
     }
 
@@ -133,94 +129,69 @@ function DeviceForm(props) {
 
 
     return (
-        <div>
-            <form className={classes.container} noValidate autoComplete="off">
-                <div className={classes.textFieldGroup}>
-                    <TextField
-                        className={classes.textField}
-                        value={deviceinfo.deviceinfo || ""}
-                        onChange={(e) => {
-                            e.persist()
-                            setDeviceInfo(device => (
-                                { ...device, deviceinfo: e.target.value }
-                            ))
-                        }}
-                        label="设备"
-                    />
-                    <TextField
-                        className={classes.textField}
-                        value={deviceinfo.regTimeLocal || ""}
-                        label="最新时间"
-                        margin="normal"
-                    />
-                </div>
+        <Container>
+            <Row>
+                <TextField
+                    className={classes.textField}
+                    value={deviceinfo.deviceinfo || ""}
+                    onChange={(e) => {
+                        e.persist()
+                        setDeviceInfo(device => (
+                            { ...device, deviceinfo: e.target.value }
+                        ))
+                    }}
+                    label="设备"
+                />
+            </Row>
+            
+            <Row>
+                <TextField
+                    className={classes.textField}
+                    label="校准(满)"
+                    onChange={(e) => {
+                        e.persist()
+                        setDeviceInfo(device => (
+                            { ...device, cal_full: e.target.value }
+                        ))
+                    }}
+                    value={deviceinfo.cal_full || ""}
+                />
+            </Row>
+            <Row>
+                <TextField
+                    className={classes.textField}
+                    label="校准(空)"
+                    onChange={(e) => {
+                        e.persist()
+                        setDeviceInfo(device => (
+                            { ...device, cal_empty: e.target.value }
+                        ))
+                    }}
+                    value={deviceinfo.cal_empty || ""}
+                />
+            </Row>
+            <Row>
+                <TextField
+                    className={classes.textField}
+                    label="睡眠时间(分钟)"
+                    onChange={(e) => {
+                        e.persist()
+                        setDeviceInfo(device => (
+                            { ...device, sleep_h: e.target.value }
+                        ))
+                    }}
+                    value={deviceinfo.sleep_h || ""}
+                />
+            </Row>
 
-                <div className={classes.textFieldGroup}>
-                    <TextField
-                        className={classes.textField}
-                        label="校准(满)"
-                        onChange={(e) => {
-                            e.persist()
-                            setDeviceInfo(device => (
-                                { ...device, cal_full: e.target.value }
-                            ))
-                        }}
-                        value={deviceinfo.cal_full || ""}
-                    />
-                    <TextField
-                        className={classes.textField}
-                        label="校准(空)"
-                        onChange={(e) => {
-                            e.persist()
-                            setDeviceInfo(device => (
-                                { ...device, cal_empty: e.target.value }
-                            ))
-                        }}
-                        value={deviceinfo.cal_empty || ""}
-                    />
-
-                    <TextField
-                        className={classes.textField}
-                        label="睡眠时间(h)"
-                        onChange={(e) => {
-                            e.persist()
-                            setDeviceInfo(device => (
-                                { ...device, sleep_h: e.target.value }
-                            ))
-                        }}
-                        value={deviceinfo.sleep_h || ""}
-                    />
-
-                    <Typography>ota更新</Typography>
-                    <Select
-                        value={deviceinfo.ota}
-                        onChange={(e) => {
-                            setDeviceInfo(device => (
-                                { ...device, ota: e.target.value }
-                            ))
-                        }}
-                        inputProps={{
-                            name: 'age',
-                            id: 'age-simple',
-                        }}
-                    >
-
-                        <MenuItem value={true}>是</MenuItem>
-                        <MenuItem value={false}>否</MenuItem>
-                    </Select>
-
-                    <input type="file" id="otafile"></input>
-
-                </div>
-
+            <Row>
                 <Button variant="contained" color="primary" className={classes.button} onClick={updateDevice}>
                     更新
             </Button>
                 <Button variant="contained" color="secondary" className={classes.button} onClick={deleteDevice}>
                     删除
             </Button>
-
-            </form>
+            </Row>
 
             <div className={classes.testData}>
                 <Typography>测试数据</Typography>
@@ -238,7 +209,11 @@ function DeviceForm(props) {
                 </List>
             </div>
             <SnackBar snackState={snackState} handleClose={handleSnack} />
-        </div>
+        </Container>
+
+
+
+
 
     );
 }
